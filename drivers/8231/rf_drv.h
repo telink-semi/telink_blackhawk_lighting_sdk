@@ -492,7 +492,7 @@ static inline void rf_ble_set_crc_value (unsigned int crc)
  */
 static inline void rf_set_ble_crc_adv ()
 {
-	WRITE_REG32 (0x800424, 0x555555);
+	WRITE_REG32 (0x80044c, 0x555555);
 }
 /**
  * @brief   This function serves to set RF access code.
