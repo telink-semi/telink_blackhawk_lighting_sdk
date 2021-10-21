@@ -56,8 +56,8 @@ void clear_remote_ID_func(void)
 {
 	unsigned char i;
 	for(i=0;i<MAX_PAIRED_REMOTER;i++){
-		led_control.remote_id[i]=0xffffffff;
-		write_id_direct(i,0xffffffff);
+		led_control.remote_id[i]=0x00000000;//0x00000000
+		write_id_direct(i,0x00000000);//0x00000000
 	}
 	led_control.paire_index=0;
 	write_data_direct_func(PAIRE_INDEX_ADDR,led_control.paire_index);

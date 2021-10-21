@@ -20,6 +20,7 @@ void rf_init_func(void)
 {
 	rf_set_access_code_len(4);
 	rf_set_access_code_value(0,0x8e89bed6);
+
 	rf_set_rx_buff(rx_packet,RX_PACKAGE_SIZE,1);
 	rf_set_power_level_index(RF_POWER_7dBm);
 	rf_set_trx_state(RF_MODE_RX,rf_channel[0]);
