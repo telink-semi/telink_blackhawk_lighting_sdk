@@ -121,6 +121,7 @@ unsigned char remote_key_scan_func(void)
 }
 void user_init(void)
 {
+	otp_init_read();//ZQ新增，为了初始化OTP的clock
 	gpio_init_func();
 	rf_init_func();
 	package_data_init_func();

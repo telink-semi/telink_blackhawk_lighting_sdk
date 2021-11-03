@@ -2,7 +2,7 @@
 #include "bsp.h"
 #include "register.h"
 #include "timer.h"
-#if 0
+#if 1
 static void otp_init_clock(void){
 	reg_dcdc_clk = 0x1f;    // open DCDC 6.75 clk to 8M
 	delay_us(300);
