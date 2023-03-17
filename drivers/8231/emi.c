@@ -51,7 +51,7 @@ void rf_drv_init (RF_ModeTypeDef RF_Mode)
 	/* RF module initialization */
 	rf_mode_init();
 
-	/* BLE/Zigbee/Nordic Mode configuration */
+	/* BLE/Zigbee/xx Mode configuration */
 
 	if (RF_Mode == RF_MODE_BLE_1M_NO_PN)
 	{
@@ -424,7 +424,7 @@ void rf_emi_tx_brust_loop(RF_ModeTypeDef rf_mode,unsigned char pkt_type)
 		if(pkt_type==0)
 			gen_prbs9(&emi_ble_tx_packet[6],37);
 	}
-	else if(rf_mode==RF_MODE_PRI_2M)     //Nordic
+	else if(rf_mode==RF_MODE_PRI_2M)     //
 	{
 		rf_start_stx ((void *)emi_pri_tx_packet, read_reg32(0x740) + 10);
 		delay_us(625*2);

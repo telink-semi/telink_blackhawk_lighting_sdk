@@ -563,13 +563,13 @@ static inline unsigned short rf_access_code_32to16 (unsigned int code)
 	return r;
 }
 /**
-*	@brief		this function is to set shock burst for RF.
-*	@param[in]	len - length of shockburst.
+*	@brief		this function is to set Private mode payload len for RF.
+*	@param[in]	len - length of Private.
 *	@return	 	none.
 */
-static inline void rf_pri_set_shockburst_len(int len)
+static inline void rf_pri_set_private_mode_len(int len)
 {
-    WRITE_REG8(0x404, READ_REG8(0x404)|0x03); //select shockburst header mode
+    WRITE_REG8(0x404, READ_REG8(0x404)|0x03); //select Private header mode
     WRITE_REG8(0x406, len);
 }
 
@@ -814,7 +814,7 @@ unsigned char  rx_packet[64]  __attribute__ ((aligned (4)));
 
 | MODE | Function | Sub-Function | APIs || Description | Update Status |
 |:-----| :------- | :----------- | :---------- | :---------- |:---------- | :------------ |
-| ESB | irq_handler() | none ||| Interrupt handler function | 2019-1-10 |
+| TPLL | irq_handler() | none ||| Interrupt handler function | 2019-1-10 |
 | ^ | main() | system_init() ||| CPU initialization function [**Mandatory**] | ^ |
 | ^ | ^ | clock_init() | clock_init(SYS_CLK_24M_XTAL) || Clock initialization function, System Clock is 24M RC by default [**optional**] | ^ |
 | ^ | ^ | rf_mode_init() | rf_mode_init(RF_MODE_PRIVATE_250K) || RF mode initialization: RF_MODE_PRIVATE_250K | ^ |
@@ -824,7 +824,7 @@ unsigned char  rx_packet[64]  __attribute__ ((aligned (4)));
 | ^ | ^ | ^ | rf_set_channel() | rf_set_channel(RF_FREQ,0) | set channel for RF | ^ |
 | ^ | ^ | ^ | rf_set_acc_code() | rf_set_acc_code(ACCESS_CODE) | set access code for RF | ^ |
 | ^ | ^ | ^ | rf_set_tx_on() || start Tx mode | ^ |
-| ^ | ^ | main_loop() | rf_tx_pkt() | rf_tx_pkt(Private_ESB_tx_packet) | send packet in manual mode | ^ |
+| ^ | ^ | main_loop() | rf_tx_pkt() | rf_tx_pkt(Private_TPLL_tx_packet) | send packet in manual mode | ^ |
 | ^ | ^ | ^ | rf_is_tx_finish() | while(!rf_is_tx_finish()) | wait for tx packet being finished | ^ |
 | ^ | ^ | ^ | rf_clr_tx_finish() || clear the flag of tx finished | ^ |
 | SB | irq_handler() | none ||| Interrupt handler function | 2019-1-10 |
@@ -836,7 +836,7 @@ unsigned char  rx_packet[64]  __attribute__ ((aligned (4)));
 | ^ | ^ | ^ | rf_set_tx_rx_off() || reset RF Tx/Rx mode  | ^ |
 | ^ | ^ | ^ | rf_set_channel() | rf_set_channel(RF_FREQ,0) | set channel for RF | ^ |
 | ^ | ^ | ^ | rf_set_acc_code() | rf_set_acc_code(ACCESS_CODE) | set access code for RF | ^ |
-| ^ | ^ | ^ | rf_pri_set_shockburst_len() | rf_pri_set_shockburst_len(RX_PAYLOAD_LEN) | set the length of shockburst for RF Private mode | ^ |
+| ^ | ^ | ^ | rf_pri_set_private_mode_len() | rf_pri_set_private_mode_len(RX_PAYLOAD_LEN) | set the length for RF Private mode | ^ |
 | ^ | ^ | ^ | rf_set_tx_on() || start Tx mode | ^ |
 | ^ | ^ | main_loop() | rf_tx_pkt() | rf_tx_pkt(Private_SB_tx_packet) | send packet in manual mode | ^ |
 | ^ | ^ | ^ | rf_is_tx_finish() | while(!rf_is_tx_finish()) | wait for tx packet being finished | ^ |
@@ -853,7 +853,7 @@ Variables above are defined as below
 
 volatile unsigned int tx_cnt=0;
 unsigned char  Private_SB_tx_packet[48] __attribute__ ((aligned (4))) = {0x20,0x00,0x00,0x00,0x20,0x00,0x00,0x00,0x00,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff};
-unsigned char  Private_ESB_tx_packet[48] __attribute__ ((aligned (4))) = {0x21,0x00,0x00,0x00,0x20,0x00,0x00,0x00,0x00,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff};
+unsigned char  Private_TPLL_tx_packet[48] __attribute__ ((aligned (4))) = {0x21,0x00,0x00,0x00,0x20,0x00,0x00,0x00,0x00,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff};
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -861,7 +861,7 @@ unsigned char  Private_ESB_tx_packet[48] __attribute__ ((aligned (4))) = {0x21,0
 
 | MODE | Function | Sub-Function | APIs || Description | Update Status |
 |:-----| :------- | :----------- | :---------- | :---------- |:---------- | :------------ |
-| ESB | irq_handler() | none ||| Interrupt handler function | 2019-1-10 |
+| TPLL | irq_handler() | none ||| Interrupt handler function | 2019-1-10 |
 | ^ | main() | system_init() ||| CPU initialization function [**Mandatory**] | ^ |
 | ^ | ^ | clock_init() | clock_init(SYS_CLK_24M_XTAL) || Clock initialization function, System Clock is 24M RC by default [**optional**] | ^ |
 | ^ | ^ | rf_mode_init() | rf_mode_init(RF_MODE_PRIVATE_250K) || RF mode initialization: RF_MODE_PRIVATE_250K | ^ |
@@ -873,7 +873,7 @@ unsigned char  Private_ESB_tx_packet[48] __attribute__ ((aligned (4))) = {0x21,0
 | ^ | ^ | ^ | rf_set_rx_buff() | rf_set_rx_buff(rx_packet,64, 0) | set buffer for rx packet | ^ |
 | ^ | ^ | ^ | rf_set_rx_on() || start Rx mode | ^ |
 | ^ | ^ | main_loop() | if( rf_is_rx_finish() ) | rf_is_rx_finish() | determine whether rx packet is finished | ^ |
-| ^ | ^ | ^ | > if(RF_NRF_ESB_PACKET_CRC_OK(rx_packet)&&RF_PRI_PACKET_LENGTH_OK(rx_packet)) || determine whether rx packet is right | ^ |
+| ^ | ^ | ^ | > if(RF_TPLL_PACKET_CRC_OK(rx_packet)&&RF_PRI_PACKET_LENGTH_OK(rx_packet)) || determine whether rx packet is right | ^ |
 | ^ | ^ | ^ | >> rx_cnt++ || Perform packet parsing and processing | ^ |
 | ^ | ^ | ^ | > rf_clr_rx_finish() || clear the flag of rx finished | ^ |
 | ^ | ^ | ^ | > rf_set_tx_rx_off_auto() || turn off RF auto mode | ^ |
@@ -886,11 +886,11 @@ unsigned char  Private_ESB_tx_packet[48] __attribute__ ((aligned (4))) = {0x21,0
 | ^ | ^ | ^ | rf_set_tx_rx_off() || reset RF Tx/Rx mode  | ^ |
 | ^ | ^ | ^ | rf_set_channel() | rf_set_channel(RF_FREQ,0) | set channel for RF | ^ |
 | ^ | ^ | ^ | rf_set_acc_code() | rf_set_acc_code(ACCESS_CODE) | set access code for RF | ^ |
-| ^ | ^ | ^ | rf_pri_set_shockburst_len() | rf_pri_set_shockburst_len(RX_PAYLOAD_LEN) | set the length of shockburst for RF Private mode | ^ |
+| ^ | ^ | ^ | rf_pri_set_private_mode_len() | rf_pri_set_private_mode_len(RX_PAYLOAD_LEN) | set the length for RF Private mode | ^ |
 | ^ | ^ | ^ | rf_set_rx_buff() | rf_set_rx_buff(rx_packet,64, 0) | set buffer for rx packet | ^ |
 | ^ | ^ | ^ | rf_set_rx_on() || start Rx mode | ^ |
 | ^ | ^ | main_loop() | if( rf_is_rx_finish() ) | rf_is_rx_finish() | determine whether rx packet is finished | ^ |
-| ^ | ^ | ^ | > if(RF_NRF_SB_PACKET_CRC_OK(rx_packet)) | RF_NRF_SB_PACKET_CRC_OK() | determine whether rx packet is right | ^ |
+| ^ | ^ | ^ | > if(RF_SB_PACKET_CRC_OK(rx_packet)) | RF_SB_PACKET_CRC_OK() | determine whether rx packet is right | ^ |
 | ^ | ^ | ^ | >> rx_cnt++ || Perform packet parsing and processing | ^ |
 | ^ | ^ | ^ | > rf_clr_rx_finish() || clear the flag of rx finished | ^ |
 | ^ | ^ | ^ | > rf_set_tx_rx_off_auto() || turn off RF auto mode | ^ |
@@ -944,7 +944,7 @@ unsigned char  rx_packet[64]  __attribute__ ((aligned (4)));
 | ^ | ^ | rf_set_tx_rx_off() || reset RF Tx/Rx mode  | ^ |
 | ^ | ^ | rf_set_channel() | rf_set_channel(RF_FREQ,0) | set channel for RF | ^ |
 | ^ | ^ | rf_set_acc_code() | rf_set_acc_code(ACCESS_CODE) | set access code for RF | ^ |
-| ^ | ^ | rf_pri_set_shockburst_len() | rf_pri_set_shockburst_len(RX_PAYLOAD_LEN) | set the length of shockburst for RF ANT mode | ^ |
+| ^ | ^ | rf_pri_set_private_mode_len() | rf_pri_set_private_mode_len(RX_PAYLOAD_LEN) | set the length for RF ANT mode | ^ |
 | ^ | ^ | rf_set_tx_on() || start Tx mode | ^ |
 | ^ | main_loop() | rf_tx_pkt() | rf_tx_pkt(Ant_tx_packet) | send packet in manual mode | ^ |
 | ^ | ^ | rf_is_tx_finish() | while(!rf_is_tx_finish()) | wait for tx packet being finished | ^ |
@@ -977,7 +977,7 @@ unsigned char  Ant_tx_packet[48] __attribute__ ((aligned (4))) = {RX_PAYLOAD_LEN
 | ^ | ^ | rf_set_tx_rx_off() || reset RF Tx/Rx mode  | ^ |
 | ^ | ^ | rf_set_channel() | rf_set_channel(RF_FREQ,0) | set channel for RF | ^ |
 | ^ | ^ | rf_set_acc_code() | rf_set_acc_code(ACCESS_CODE) | set access code for RF | ^ |
-| ^ | ^ | rf_pri_set_shockburst_len() | rf_pri_set_shockburst_len(RX_PAYLOAD_LEN) | set the length of shockburst for RF ANT mode | ^ |
+| ^ | ^ | rf_pri_set_private_mode_len() | rf_pri_set_private_mode_len(RX_PAYLOAD_LEN) | set the length for RF ANT mode | ^ |
 | ^ | ^ | rf_set_rx_buff() | rf_set_rx_buff(rx_packet,64, 0) | set buffer for rx packet | ^ |
 | ^ | ^ | rf_set_rx_on() || start Rx mode | ^ |
 | ^ | main_loop() | if( rf_is_rx_finish() ) | rf_is_rx_finish() | determine whether rx packet is finished | ^ |
