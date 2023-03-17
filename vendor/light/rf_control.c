@@ -1,3 +1,26 @@
+/********************************************************************************************************
+ * @file	rf_control.c
+ *
+ * @brief	This is the source file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 //#include "../../common.h"
 #include "../../drivers.h"
 #include "frame.h"
@@ -11,13 +34,13 @@ const unsigned char rf_channel[4]={1,24,51,76};
 
 unsigned char led_on_cnt=0;
 /***********************************************************
- * º¯Êı¹¦ÄÜ£ºRF³õÊ¼»¯
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šRFåˆå§‹åŒ–
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void rf_init_func(void)
 {
-//	rf_drv_init(RF_MODE_BLE_1M_NO_PN);//ÉèÖÃÍ¨Ñ¶ËÙÂÊ
+//	rf_drv_init(RF_MODE_BLE_1M_NO_PN);//è®¾ç½®é€šè®¯é€Ÿç‡
 	rf_set_access_code_len(5);
 	rf_set_access_code_value(0,0x9539517671);
 //	rf_set_access_code_len(4);
@@ -25,14 +48,14 @@ void rf_init_func(void)
 	rf_set_rx_buff(rx_packet,RX_PACKGET_SIZE,1);
 	rf_set_power_level_index(RF_POWER_7dBm);
 	rf_set_trx_state(RF_MODE_RX,rf_channel[0]);
-	rf_irq_clr_mask(0xffff);                      //ÏÈ¹ØµôËùÓĞµÄRFÖĞ¶Ï
-	rf_irq_set_mask(FLD_RF_IRQ_RX);//´ò¿ªRF RXÖĞ¶Ï
-	irq_set_mask(FLD_IRQ_ZB_RT_EN);//¿ªRF×ÜÖĞ¶Ï
+	rf_irq_clr_mask(0xffff);                      //å…ˆå…³æ‰æ‰€æœ‰çš„RFä¸­æ–­
+	rf_irq_set_mask(FLD_RF_IRQ_RX);//æ‰“å¼€RF RXä¸­æ–­
+	irq_set_mask(FLD_IRQ_ZB_RT_EN);//å¼€RFæ€»ä¸­æ–­
 }
 /***********************************************************
- * º¯Êı¹¦ÄÜ£ºÌøÆµ£¬4¸öÆµµãÑ­»·ÇĞ»»
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šè·³é¢‘ï¼Œ4ä¸ªé¢‘ç‚¹å¾ªç¯åˆ‡æ¢
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void rf_change_channel_func(void)
 {
@@ -42,9 +65,9 @@ void rf_change_channel_func(void)
 	rf_set_trx_state(RF_MODE_RX,rf_channel[Channel_index]);
 }
 /***********************************************************
- * º¯Êı¹¦ÄÜ£º×ª·¢ÖĞ¼ÌÊı¾İ°ü
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šè½¬å‘ä¸­ç»§æ•°æ®åŒ…
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void send_relay_pkt(void)
 {
@@ -59,49 +82,49 @@ void send_relay_pkt(void)
 	rf_change_channel_func();
 }
 /***********************************************************
- * º¯Êı¹¦ÄÜ£ºÊÕµ½RFÊı¾İºó´¦Àíº¯Êı
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šæ”¶åˆ°RFæ•°æ®åå¤„ç†å‡½æ•°
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void rf_packget_pro_func(void)
 {
-	if(g_packget_new){//ÓĞĞÂµÄrfÊı¾İ°ü
+	if(g_packget_new){//æœ‰æ–°çš„rfæ•°æ®åŒ…
 		g_packget_new=0;
-		if(g_state==PAIRRING_STATE){//ÊÇ·ñÎª¶ÔÂë×´Ì¬
-			if(g_packget_cmd==LED_ON_CMD){//°´¼üÖµÊÇ·ñÎª¿ªµÆ½¡
+		if(g_state==PAIRRING_STATE){//æ˜¯å¦ä¸ºå¯¹ç çŠ¶æ€
+			if(g_packget_cmd==LED_ON_CMD){//æŒ‰é”®å€¼æ˜¯å¦ä¸ºå¼€ç¯å¥
 				sys_run_tick=get_sys_tick();
-				remote_save_grp=g_packget_grp;//±£´æ×é±ğ
-				remote_save_pid=g_packget_pid;//±£´æÒ£¿ØÆ÷ID
-				g_state=CLEARCODE_STATE;//½øÈëÏÂÒ»¸ö×´Ì¬
+				remote_save_grp=g_packget_grp;//ä¿å­˜ç»„åˆ«
+				remote_save_pid=g_packget_pid;//ä¿å­˜é¥æ§å™¨ID
+				g_state=CLEARCODE_STATE;//è¿›å…¥ä¸‹ä¸€ä¸ªçŠ¶æ€
 				led_on_cnt=1;
-			}else if(g_packget_cmd!=LED_NONE_CMD){//²»Îª¿ªµÆ¼ü
-				if(paired_ID_match(g_packget_pid,g_packget_grp)){//Ò£¿ØÆ÷µÄID¼°×é±ğÊÇ·ñÆ¥Åä£¬ÈôÆ¥Åä£¬ÔòÍË³ö¶ÔÂë£¬½øÈëÕı³£×´Ì¬
+			}else if(g_packget_cmd!=LED_NONE_CMD){//ä¸ä¸ºå¼€ç¯é”®
+				if(paired_ID_match(g_packget_pid,g_packget_grp)){//é¥æ§å™¨çš„IDåŠç»„åˆ«æ˜¯å¦åŒ¹é…ï¼Œè‹¥åŒ¹é…ï¼Œåˆ™é€€å‡ºå¯¹ç ï¼Œè¿›å…¥æ­£å¸¸çŠ¶æ€
 					g_state=NORMAL_STATE;
 				}
 			}
 		}else if(g_state==CLEARCODE_STATE){
-			if(remote_save_pid==g_packget_pid){//Ò£¿ØÆ÷IDÊÇ·ñÒ»ÖÂ
-				if(g_packget_cmd==LED_ON_CMD){//ÊÇ·ñÎª¿ªµÆ¼ü
-					sys_run_tick=get_sys_tick();//¸üĞÂ½ÓÊÕÃüÁîµÄÊ±¼äµã
+			if(remote_save_pid==g_packget_pid){//é¥æ§å™¨IDæ˜¯å¦ä¸€è‡´
+				if(g_packget_cmd==LED_ON_CMD){//æ˜¯å¦ä¸ºå¼€ç¯é”®
+					sys_run_tick=get_sys_tick();//æ›´æ–°æ¥æ”¶å‘½ä»¤çš„æ—¶é—´ç‚¹
 					led_on_cnt++;
-					if(led_on_cnt>4){//³¬¹ı4´ÎÔòÇåÂë
+					if(led_on_cnt>4){//è¶…è¿‡4æ¬¡åˆ™æ¸…ç 
 						clear_pared_code_func();
 						led_flash_updata(5);
 						g_state=NORMAL_STATE;
 					}
-				}else if(g_packget_cmd!=LED_NONE_CMD){//·Ç¿ªµÆ¼°¿Õ¼üÖµ
-					if(paired_ID_match(g_packget_pid,g_packget_grp)){//Ò£¿ØÆ÷µÄID¼°×é±ğÊÇ·ñÆ¥Åä£¬ÈôÆ¥Åä£¬ÔòÍË³ö¶ÔÂë£¬½øÈëÕı³£×´Ì¬
+				}else if(g_packget_cmd!=LED_NONE_CMD){//éå¼€ç¯åŠç©ºé”®å€¼
+					if(paired_ID_match(g_packget_pid,g_packget_grp)){//é¥æ§å™¨çš„IDåŠç»„åˆ«æ˜¯å¦åŒ¹é…ï¼Œè‹¥åŒ¹é…ï¼Œåˆ™é€€å‡ºå¯¹ç ï¼Œè¿›å…¥æ­£å¸¸çŠ¶æ€
 						g_state=NORMAL_STATE;
 					}
 				}
 			}
-		}else if(g_state==NORMAL_STATE){//Õı³£×´Ì¬
+		}else if(g_state==NORMAL_STATE){//æ­£å¸¸çŠ¶æ€
 			send_relay_pkt();
-			if(paired_ID_match(g_packget_pid,g_packget_grp)){//Ò£¿ØÆ÷µÄID¼°×é±ğÊÇ·ñÆ¥Åä£¬ÈôÆ¥Åä£¬ÔòÖ´ĞĞÃüÁî
+			if(paired_ID_match(g_packget_pid,g_packget_grp)){//é¥æ§å™¨çš„IDåŠç»„åˆ«æ˜¯å¦åŒ¹é…ï¼Œè‹¥åŒ¹é…ï¼Œåˆ™æ‰§è¡Œå‘½ä»¤
 				if(g_packget_cmd!=LED_SET_CHRO_LUMI_CMD){
-					led_event_proc_func(g_packget_cmd);//Ö´ĞĞÃüÁî
+					led_event_proc_func(g_packget_cmd);//æ‰§è¡Œå‘½ä»¤
 				}else{
-					led_set_lumi_chrome_func(g_packget_lumi,g_packget_chrome);//ÉèÖÃÉ«ÎÂÖµ
+					led_set_lumi_chrome_func(g_packget_lumi,g_packget_chrome);//è®¾ç½®è‰²æ¸©å€¼
 				}
 			}
 		}

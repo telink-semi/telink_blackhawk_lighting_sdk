@@ -1,3 +1,26 @@
+/********************************************************************************************************
+ * @file	app.c
+ *
+ * @brief	This is the source file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 #include "app_config.h"
 #include "../../user_drivers.h"
 #include "rf_control.h"
@@ -13,9 +36,9 @@ unsigned int  sys_run_tick;
 
 #define  DEBUG   1
 /***********************************************************
- * º¯Êı¹¦ÄÜ£º³õÊ¼»¯PWM
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šåˆå§‹åŒ–PWM
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void set_pwm_init_func(void)
 {
@@ -36,23 +59,23 @@ void set_pwm_init_func(void)
 	pwm_start(PWM4);
 }
 /***********************************************************
- * º¯Êı¹¦ÄÜ£ºÏµÍ³×´Ì¬¼ì²â
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šç³»ç»ŸçŠ¶æ€æ£€æµ‹
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void check_sys_state_func(void)
 {
 	if(g_state==PAIRRING_STATE){
-		if(timeout_us(sys_run_tick,6000000)){//ÉÏµç6sÃ»ÓĞÊÕµ½¿ªµÆ¼ü£¬ÏµÍ³½øÈëÕı³£Ä£Ê½
+		if(timeout_us(sys_run_tick,6000000)){//ä¸Šç”µ6sæ²¡æœ‰æ”¶åˆ°å¼€ç¯é”®ï¼Œç³»ç»Ÿè¿›å…¥æ­£å¸¸æ¨¡å¼
 			g_state=NORMAL_STATE;
 		}
-	}else if(g_state==CLEARCODE_STATE){//ÏµÍ³ÊÕµ½¿ªµÆ½¡
-		if(timeout_us(sys_run_tick,500000)){//ÊÕµ½¿ªµÆ°´¼üºó£¬³¬¹ı500msÃ»ÓĞÊÕµ½ÏÂÒ»´Î¿ªµÆ½¡
-			if(led_on_cnt==1){//Ö»ÊÕµ½1´Î¿ªµÆ½¡£¬ÔòÈÏÎªÊÇ¶ÔÂë
-				led_flash_updata(3);//ÉÁË¸3´Î
-				pair_id_save_func();//±£´æ²ÎÊı
+	}else if(g_state==CLEARCODE_STATE){//ç³»ç»Ÿæ”¶åˆ°å¼€ç¯å¥
+		if(timeout_us(sys_run_tick,500000)){//æ”¶åˆ°å¼€ç¯æŒ‰é”®åï¼Œè¶…è¿‡500msæ²¡æœ‰æ”¶åˆ°ä¸‹ä¸€æ¬¡å¼€ç¯å¥
+			if(led_on_cnt==1){//åªæ”¶åˆ°1æ¬¡å¼€ç¯å¥ï¼Œåˆ™è®¤ä¸ºæ˜¯å¯¹ç 
+				led_flash_updata(3);//é—ªçƒ3æ¬¡
+				pair_id_save_func();//ä¿å­˜å‚æ•°
 			}
-			g_state=NORMAL_STATE;//ÏµÍ³½øÈëÕı³£Ä£Ê½
+			g_state=NORMAL_STATE;//ç³»ç»Ÿè¿›å…¥æ­£å¸¸æ¨¡å¼
 		}
 	}
 }

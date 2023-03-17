@@ -1,3 +1,26 @@
+/********************************************************************************************************
+ * @file	app.c
+ *
+ * @brief	This is the source file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 #include "app_config.h"
 
 #include "../../drivers.h"
@@ -8,10 +31,10 @@
 #define  DEBUG          1
 #define LED_PIN         GPIO_SWSC7
 unsigned long firmwareVersion;
-const unsigned int gpio_row[]={GPIO_PC2,GPIO_PC3,GPIO_PC1,GPIO_PB0,GPIO_PD2};//¾ØÕóÐÐµÄIO
-const unsigned int gpio_column[]={GPIO_PB3,GPIO_PB4,GPIO_PB5};//¾ØÕóÁÐµÄIO
+const unsigned int gpio_row[]={GPIO_PC2,GPIO_PC3,GPIO_PC1,GPIO_PB0,GPIO_PD2};//çŸ©é˜µè¡Œçš„IO
+const unsigned int gpio_column[]={GPIO_PB3,GPIO_PB4,GPIO_PB5};//çŸ©é˜µåˆ—çš„IO
 #if 0
-const unsigned char key_table[4][4] = {//°´¼ü±í¸ñ
+const unsigned char key_table[4][4] = {//æŒ‰é”®è¡¨æ ¼
 		{KEY_ON_CMD<<4,             KEY_CHROME_DEC_CMD<<4,  KEY_PAIRE_CODE_CMD<<4,      KEY_CLEAR_CODE_CMD<<4 },
 		{KEY_LUMINANCE_INC_CMD<<4,  KEY_NONE_CMD,           KEY_LUMINANCE_DEC_CMD<<4,   KEY_NONE_CMD          },
 		{KEY_NONE_CMD,              KEY_NONE_CMD,           KEY_NONE_CMD,               KEY_NONE_CMD          },
@@ -24,7 +47,7 @@ const unsigned char key_table[4][4] = {//°´¼ü±í¸ñ
 //		{KEY_CHROME_DEC_CMD<<4,       KEY_PAIRE_CODE_CMD<<4,     KEY_CHROME_INC_CMD<<4,  KEY_NONE_CMD},
 //		{KEY_ON_CMD<<4,               KEY_LUMINANCE_INC_CMD<<4,  KEY_OFF_CMD<<4,         KEY_NONE_CMD},
 //};
-const unsigned char key_table[5][3] = {//°´¼ü±í¸ñ
+const unsigned char key_table[5][3] = {//æŒ‰é”®è¡¨æ ¼
 		{KEY_LUMINANCE_DEC_CMD<<4,  KEY_CLEAR_CODE_CMD<<4,      KEY_PAIRE_CODE_CMD<<4  },
 		{KEY_CHROME_DEC_CMD<<4,     KEY_BREATH_RGB_MODE_CMD<<4, KEY_NIGHT_CMD<<4       },
 		{KEY_NONE_CMD,              KEY_NONE_CMD,               KEY_NONE_CMD           },
@@ -38,54 +61,54 @@ unsigned int key_lumi_chroma_cnt;
 unsigned char pre_key;
 unsigned char loop;
 /*******************************************************************
- * º¯Êý¹¦ÄÜ£ºGPIO³õÊ¼»¯
- * ²Î       Êý£º
- * ·µ »Ø Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šGPIOåˆå§‹åŒ–
+ * å‚       æ•°ï¼š
+ * è¿” å›ž å€¼ï¼š
  ******************************************************************/
 void gpio_init_func(void)
 {
 	unsigned char i;
 	for(i=0;i<5;i++){
-		gpio_set_func(gpio_row[i],AS_GPIO);     //IOÉèÎªÆÕÍ¨IO
-		gpio_set_output_en(gpio_row[i],LEVEL_LOW); //Êä³öÊ¹ÄÜ¹Øµô
-		gpio_set_input_en(gpio_row[i],LEVEL_HIGH);  //ÊäÈëÊ¹ÄÜ¹Øµô
-		gpio_write(gpio_row[i],LEVEL_LOW);        //IOÊä³öÉèÎªµÍµçÆ½
-		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);        //IOÉèÎªÐü¸¡×´Ì¬
+		gpio_set_func(gpio_row[i],AS_GPIO);     //IOè®¾ä¸ºæ™®é€šIO
+		gpio_set_output_en(gpio_row[i],LEVEL_LOW); //è¾“å‡ºä½¿èƒ½å…³æŽ‰
+		gpio_set_input_en(gpio_row[i],LEVEL_HIGH);  //è¾“å…¥ä½¿èƒ½å…³æŽ‰
+		gpio_write(gpio_row[i],LEVEL_LOW);        //IOè¾“å‡ºè®¾ä¸ºä½Žç”µå¹³
+		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);        //IOè®¾ä¸ºæ‚¬æµ®çŠ¶æ€
 	}
 
 	for(i=0;i<3;i++){
-		gpio_set_func(gpio_column[i],AS_GPIO);        //IOÉèÎªÆÕÍ¨IO
-		gpio_set_output_en(gpio_column[i],LEVEL_LOW);    //Êä³öÊ¹ÄÜ¹Øµô
-		gpio_set_input_en(gpio_column[i],LEVEL_HIGH);       //Ê¹ÄÜÊäÈë
-		gpio_set_up_down_resistor(gpio_column[i],GPIO_PULL_UP_1M);          //ÉèÖÃÉÏÀ­1Mµç×è
-		gpio_write(gpio_column[i],LEVEL_LOW);           //Êä³öÉèÎª0
-		pm_set_gpio_wakeup(gpio_column[i],LEVEL_LOW,1);       //ÉèÖÃIOµÍµçÆ½»½ÐÑ£¬µÚÒ»²ÎÊýÎªIO£¬µÚ¶ø²ÎÊýÎª»½ÐÑµçÆ½£¬µÚÈý²ÎÊýÎªÊ¹ÄÜ
+		gpio_set_func(gpio_column[i],AS_GPIO);        //IOè®¾ä¸ºæ™®é€šIO
+		gpio_set_output_en(gpio_column[i],LEVEL_LOW);    //è¾“å‡ºä½¿èƒ½å…³æŽ‰
+		gpio_set_input_en(gpio_column[i],LEVEL_HIGH);       //ä½¿èƒ½è¾“å…¥
+		gpio_set_up_down_resistor(gpio_column[i],GPIO_PULL_UP_1M);          //è®¾ç½®ä¸Šæ‹‰1Mç”µé˜»
+		gpio_write(gpio_column[i],LEVEL_LOW);           //è¾“å‡ºè®¾ä¸º0
+		pm_set_gpio_wakeup(gpio_column[i],LEVEL_LOW,1);       //è®¾ç½®IOä½Žç”µå¹³å”¤é†’ï¼Œç¬¬ä¸€å‚æ•°ä¸ºIOï¼Œç¬¬è€Œå‚æ•°ä¸ºå”¤é†’ç”µå¹³ï¼Œç¬¬ä¸‰å‚æ•°ä¸ºä½¿èƒ½
 	}
 
-	gpio_set_func(LED_PIN,AS_GPIO);        //IOÉèÎªÆÕÍ¨IO
-	gpio_set_output_en(LED_PIN,LEVEL_HIGH);    //Êä³öÊ¹ÄÜ¹Øµô
-	gpio_set_input_en(LED_PIN,LEVEL_LOW);       //Ê¹ÄÜÊäÈë
+	gpio_set_func(LED_PIN,AS_GPIO);        //IOè®¾ä¸ºæ™®é€šIO
+	gpio_set_output_en(LED_PIN,LEVEL_HIGH);    //è¾“å‡ºä½¿èƒ½å…³æŽ‰
+	gpio_set_input_en(LED_PIN,LEVEL_LOW);       //ä½¿èƒ½è¾“å…¥
 	gpio_write(LED_PIN,1);
-	gpio_set_up_down_resistor(LED_PIN,GPIO_PULL_NONE);        //IOÉèÎªÐü¸¡×´Ì¬
+	gpio_set_up_down_resistor(LED_PIN,GPIO_PULL_NONE);        //IOè®¾ä¸ºæ‚¬æµ®çŠ¶æ€
 }
 /*******************************************************************
- * º¯Êý¹¦ÄÜ£º½øÈëdeepsleepÇ°ÉèÖÃ²ÎÊý
- * ²Î       Êý£º
- * ·µ »Ø Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šè¿›å…¥deepsleepå‰è®¾ç½®å‚æ•°
+ * å‚       æ•°ï¼š
+ * è¿” å›ž å€¼ï¼š
  ******************************************************************/
 void set_wakeup_func(void)
 {
 	unsigned char i;
 	for(i=0;i<5;i++)
-		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_DN_100K);      //ÉèÖÃÐÐIOÏÂÀ­100K£¬µ±°´¼ü°´ÏÂÊ±£¬ÁÐIOÎªµÍµçÆ½£¬Ôò¿É»½ÐÑMCU
-//	analog_write(0x3a, current_active_group);         //½øÈëdeepsleepÇ°±£´æ×é±ðÖµ
-	analog_write(0x3b, led_remote.pkt_seq);         //½øÈëdeepsleepÇ°±£´æ°üµÄÐòÁÐºÅ
+		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_DN_100K);      //è®¾ç½®è¡ŒIOä¸‹æ‹‰100Kï¼Œå½“æŒ‰é”®æŒ‰ä¸‹æ—¶ï¼Œåˆ—IOä¸ºä½Žç”µå¹³ï¼Œåˆ™å¯å”¤é†’MCU
+//	analog_write(0x3a, current_active_group);         //è¿›å…¥deepsleepå‰ä¿å­˜ç»„åˆ«å€¼
+	analog_write(0x3b, led_remote.pkt_seq);         //è¿›å…¥deepsleepå‰ä¿å­˜åŒ…çš„åºåˆ—å·
 	gpio_write(LED_PIN,0);
 }
 /*******************************************************************
- * º¯Êý¹¦ÄÜ£º·¢ËÍÊý¾Ý°üµÄÊý¾Ý³õÊ¼»¯
- * ²Î       Êý£º
- * ·µ »Ø Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šå‘é€æ•°æ®åŒ…çš„æ•°æ®åˆå§‹åŒ–
+ * å‚       æ•°ï¼š
+ * è¿” å›ž å€¼ï¼š
  ******************************************************************/
 void package_data_init_func(void)
 {
@@ -98,23 +121,23 @@ void package_data_init_func(void)
 	led_remote.pkt_seq=analog_read(0x3b);
 }
 /*******************************************************************
- * º¯Êý¹¦ÄÜ£º°´¼üÉ¨Ãè
- * ²Î       Êý£º
- * ·µ »Ø Öµ£º·µ»Ø¶ÔÓ¦µÄ°´¼üÖµ
+ * å‡½æ•°åŠŸèƒ½ï¼šæŒ‰é”®æ‰«æ
+ * å‚       æ•°ï¼š
+ * è¿” å›ž å€¼ï¼šè¿”å›žå¯¹åº”çš„æŒ‰é”®å€¼
  ******************************************************************/
 unsigned char remote_key_scan_func(void)
 {
 	unsigned char i,j;
 	for(i=0;i<5;i++){
-		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_DN_100K);//ÉèÖÃÐÐIOÎªÏÂÀ­100K
+		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_DN_100K);//è®¾ç½®è¡ŒIOä¸ºä¸‹æ‹‰100K
 		delay_us(10);
 		for(j=0;j<3;j++){
-			if(gpio_read(gpio_column[j])==0){//ÓÐ°´¼ü°´ÏÂ
-				gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);//Ðü¸¡
-				return key_table[i][j];//²é±í£¬·µ»Ø±íÖµ
+			if(gpio_read(gpio_column[j])==0){//æœ‰æŒ‰é”®æŒ‰ä¸‹
+				gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);//æ‚¬æµ®
+				return key_table[i][j];//æŸ¥è¡¨ï¼Œè¿”å›žè¡¨å€¼
 			}
 		}
-		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);//ÈôÎÞÏàÓ¦°´¼ü°´ÏÂ£¬ÔòÐü¸¡
+		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);//è‹¥æ— ç›¸åº”æŒ‰é”®æŒ‰ä¸‹ï¼Œåˆ™æ‚¬æµ®
 		delay_us(10);
 	}
 	return 0;
@@ -122,7 +145,7 @@ unsigned char remote_key_scan_func(void)
 
 void user_init(void)
 {
-	otp_init_read();//ZQÐÂÔö£¬ÎªÁË³õÊ¼»¯OTPµÄclock
+	otp_init_read();//ZQæ–°å¢žï¼Œä¸ºäº†åˆå§‹åŒ–OTPçš„clock
 	gpio_init_func();
 	rf_init_func();
 	package_data_init_func();
@@ -178,6 +201,6 @@ void main_loop(void)
 #if 0
 	delay_us(10000);
 #else
-	pm_sleep_wakeup(SUSPEND_MODE,PM_WAKEUP_TIMER,get_sys_tick()+10*CLOCK_SYS_CLOCK_1MS);//½øÈësuspend 10ms
+	pm_sleep_wakeup(SUSPEND_MODE,PM_WAKEUP_TIMER,get_sys_tick()+10*CLOCK_SYS_CLOCK_1MS);//è¿›å…¥suspend 10ms
 #endif
 }

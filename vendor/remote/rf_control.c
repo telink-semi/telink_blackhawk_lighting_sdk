@@ -1,3 +1,26 @@
+/********************************************************************************************************
+ * @file	rf_control.c
+ *
+ * @brief	This is the source file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 //#include "../../common.h"
 #include "../../drivers.h"
 #include "frame.h"
@@ -17,9 +40,9 @@ void rf_init_func(void)
 	rf_set_rx_buff(rx_packet,RX_PACKGET_SIZE,1);
 	rf_set_power_level_index(RF_POWER_7dBm);
 	rf_set_trx_state(RF_MODE_TX,rf_channel[0]);
-	rf_irq_clr_mask(0xffff);                      //ÏÈ¹ØµôËùÓÐµÄRFÖÐ¶Ï
-	rf_irq_set_mask(FLD_RF_IRQ_RX);//´ò¿ªRF RXÖÐ¶Ï
-	irq_set_mask(FLD_IRQ_ZB_RT_EN);//¿ªRF×ÜÖÐ¶Ï
+	rf_irq_clr_mask(0xffff);                      //å…ˆå…³æŽ‰æ‰€æœ‰çš„RFä¸­æ–­
+	rf_irq_set_mask(FLD_RF_IRQ_RX);//æ‰“å¼€RF RXä¸­æ–­
+	irq_set_mask(FLD_IRQ_ZB_RT_EN);//å¼€RFæ€»ä¸­æ–­
 }
 
 void send_package_data_func(void)

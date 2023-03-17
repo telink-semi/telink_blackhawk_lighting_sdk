@@ -1,13 +1,36 @@
+/********************************************************************************************************
+ * @file	pairing_op.c
+ *
+ * @brief	This is the source file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 //#include "../../common.h"
 #include "../../drivers.h"
 #include "../../user_drivers.h"
 #include "frame.h"
 #include "pairing_op.h"
 /***********************************************************
- * º¯Êı¹¦ÄÜ£ºID¼°×é±ğ²éÑ¯Æ¥Åä
- * ²Î       Êı£ºpid   Ò£¿ØÆ÷ID
- *        grp   ×é±ğ
- * ·µ »Ø  Öµ£ºÆ¥Åä³É¹¦£¬·µ»Ø1£¬²»³É¹¦£¬·µ»Ø0
+ * å‡½æ•°åŠŸèƒ½ï¼šIDåŠç»„åˆ«æŸ¥è¯¢åŒ¹é…
+ * å‚       æ•°ï¼špid   é¥æ§å™¨ID
+ *        grp   ç»„åˆ«
+ * è¿” å›  å€¼ï¼šåŒ¹é…æˆåŠŸï¼Œè¿”å›1ï¼Œä¸æˆåŠŸï¼Œè¿”å›0
  **********************************************************/
 unsigned char paired_ID_match(unsigned int pid,unsigned char grp)
 {
@@ -20,9 +43,9 @@ unsigned char paired_ID_match(unsigned int pid,unsigned char grp)
 	return 0;
 }
 /***********************************************************
- * º¯Êı¹¦ÄÜ£ºĞ´ID¼°×é±ğµ½eeprom
- * ²Î       Êı£ºposition   ÏàÓ¦Î»ÖÃµÄÆ«ÒÆÁ¿
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šå†™IDåŠç»„åˆ«åˆ°eeprom
+ * å‚       æ•°ï¼šposition   ç›¸åº”ä½ç½®çš„åç§»é‡
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void write_position_detect(unsigned int position)
 {
@@ -36,9 +59,9 @@ void write_position_detect(unsigned int position)
 	fm24c02_write_func(EEPROM_ID_INDEX_ADDR,led_control.paire_index);
 }
 /***********************************************************
- * º¯Êı¹¦ÄÜ£ºÇåÂë
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šæ¸…ç 
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void clear_pared_code_func(void)
 {
@@ -52,29 +75,29 @@ void clear_pared_code_func(void)
 	led_para_save_func();
 }
 /***********************************************************
- * º¯Êı¹¦ÄÜ£º±£´æid
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šä¿å­˜id
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void pair_id_save_func(void)
 {
 	unsigned char i;
 	unsigned char temp;
 	for(i=0;i<MAX_PAIRED_REMOTER;i++){
-		if(remote_save_pid==led_control.pared_remote[i].pid){//IDÆ¥Åä
-			if(led_control.pared_remote[i].group_id!=remote_save_grp){//×é±ğÆ¥Åä
-				write_position_detect(i);//±£´æ
+		if(remote_save_pid==led_control.pared_remote[i].pid){//IDåŒ¹é…
+			if(led_control.pared_remote[i].group_id!=remote_save_grp){//ç»„åˆ«åŒ¹é…
+				write_position_detect(i);//ä¿å­˜
 				return;
-			}else//ÈôÒÑ±£´æ£¬Ôò·µ»Ø
+			}else//è‹¥å·²ä¿å­˜ï¼Œåˆ™è¿”å›
 				return;
 		}
 	}
 
-	if(i==MAX_PAIRED_REMOTER){//ÒÑ±£´æÊı¾İÖĞÃ»ÓĞÆ¥ÅäµÄ
-		temp=led_control.paire_index;//±£´æµÄÏÂ±ê
+	if(i==MAX_PAIRED_REMOTER){//å·²ä¿å­˜æ•°æ®ä¸­æ²¡æœ‰åŒ¹é…çš„
+		temp=led_control.paire_index;//ä¿å­˜çš„ä¸‹æ ‡
 		led_control.paire_index++;
-		if(led_control.paire_index>=MAX_PAIRED_REMOTER)//ÊÇ·ñ³¬¹ı×î´ó±£´æÖµ
-			led_control.paire_index=0;//³¬¹ıºóÄ¬ÈÏÎª0
-		write_position_detect(temp);//±£´æ
+		if(led_control.paire_index>=MAX_PAIRED_REMOTER)//æ˜¯å¦è¶…è¿‡æœ€å¤§ä¿å­˜å€¼
+			led_control.paire_index=0;//è¶…è¿‡åé»˜è®¤ä¸º0
+		write_position_detect(temp);//ä¿å­˜
 	}
 }

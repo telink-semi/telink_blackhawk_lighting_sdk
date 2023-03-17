@@ -1,3 +1,26 @@
+/********************************************************************************************************
+ * @file	app.c
+ *
+ * @brief	This is the source file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 #include "app_config.h"
 #include "../../user_drivers.h"
 #include "state.h"
@@ -8,9 +31,9 @@
 
 #define DEBUG       1
 /***********************************************************
- * º¯Êı¹¦ÄÜ£º³õÊ¼»¯PWM
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šåˆå§‹åŒ–PWM
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void set_pwm_init_func(void)
 {

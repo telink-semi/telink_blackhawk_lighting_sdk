@@ -1,3 +1,26 @@
+/********************************************************************************************************
+ * @file	interrupt.c
+ *
+ * @brief	This is the source file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 //#include "../../common.h"
 #include"../../drivers.h"
 #include "frame.h"
@@ -39,16 +62,16 @@ _attribute_ram_code_ __attribute__((optimize("-Os"))) void irq_handler(void)
 {
 	unsigned short src=rf_irq_get_src();
 	unsigned char index;
-	if(src&FLD_RF_IRQ_RX&reg_rf_irq_mask){                //½ÓÊÕÖĞ¶Ï£¬Ã¿½Óµ½Êı¾İ¸Ã±êÖ¾¶¼ÖÃ1£¬²»¹ÜÊı¾İÕıÈ·Óë·ñ
+	if(src&FLD_RF_IRQ_RX&reg_rf_irq_mask){                //æ¥æ”¶ä¸­æ–­ï¼Œæ¯æ¥åˆ°æ•°æ®è¯¥æ ‡å¿—éƒ½ç½®1ï¼Œä¸ç®¡æ•°æ®æ­£ç¡®ä¸å¦
 		irq_rx++;
 		rf_irq_clr_src(FLD_RF_IRQ_RX);
-		index=rf_rx_buffer_get()&1;                       //¶ÁÈ¡»º´æµÄÎ»ÖÃ
-		unsigned char *p=rx_packet+index*RX_PACKGET_SIZE;            //½ÓÊÕ»º´æµÄÖ¸ÕëµØÖ·
+		index=rf_rx_buffer_get()&1;                       //è¯»å–ç¼“å­˜çš„ä½ç½®
+		unsigned char *p=rx_packet+index*RX_PACKGET_SIZE;            //æ¥æ”¶ç¼“å­˜çš„æŒ‡é’ˆåœ°å€
 
-		if(Rf_RCV_PKT_Valid(p)){                          //Ğ£Ñé½ÓÊÕ°ü
+		if(Rf_RCV_PKT_Valid(p)){                          //æ ¡éªŒæ¥æ”¶åŒ…
 			rf_packet_led_remote_t *pkt=(rf_packet_led_remote_t *)(p+8);
-			if(pkt->vid==0x5453){//Æ¥Åä²úÆ·ID
-//				if(last_seq!=pkt->rf_seq_no||last_key_cmd!=pkt->control_key){//ĞòÁĞºÅÓëÃüÁîÖµÊÇ·ñÒ»Ñù£¬ÓĞÆäÖĞÒ»¸ö²»Ò»ÑùÔòÎª²»Í¬ÃüÁî
+			if(pkt->vid==0x5453){//åŒ¹é…äº§å“ID
+//				if(last_seq!=pkt->rf_seq_no||last_key_cmd!=pkt->control_key){//åºåˆ—å·ä¸å‘½ä»¤å€¼æ˜¯å¦ä¸€æ ·ï¼Œæœ‰å…¶ä¸­ä¸€ä¸ªä¸ä¸€æ ·åˆ™ä¸ºä¸åŒå‘½ä»¤
 				if(check_pkt_info(pkt)){
 					unsigned char *ptr=(unsigned char *)&relay_pkt.pid;
 					for(index=0;index<11;index++)

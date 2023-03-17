@@ -1,3 +1,26 @@
+/********************************************************************************************************
+ * @file	frame.h
+ *
+ * @brief	This is the header file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 #pragma once
 
 #define MAX_PAIRED_REMOTER  8
@@ -39,8 +62,8 @@ typedef struct{
 typedef struct{
 	unsigned int   remote_id[MAX_PAIRED_REMOTER];
 	unsigned char  paire_index;
-	unsigned char  luminance_index;//亮度下标
-	unsigned char  chroma_index;//色温下标
+	unsigned char  luminance_index;//浜害涓嬫爣
+	unsigned char  chroma_index;//鑹叉俯涓嬫爣
 	unsigned char  led_state;
 	unsigned short rgb_value[3];
 }LED_Control_Info_t;

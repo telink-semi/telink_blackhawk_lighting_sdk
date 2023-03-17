@@ -1,3 +1,26 @@
+/********************************************************************************************************
+ * @file	rf_control.c
+ *
+ * @brief	This is the source file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 //#include "../../common.h"
 #include "../../drivers.h"
 #include "../../user_drivers.h"
@@ -24,17 +47,17 @@ void rf_init_func(void)
 	rf_set_rx_buff(rx_packet,RX_PACKAGE_SIZE,1);
 	rf_set_power_level_index(RF_POWER_7dBm);
 	rf_set_trx_state(RF_MODE_RX,rf_channel[0]);
-	rf_irq_clr_mask(0xffff);                      //ÏÈ¹ØµôËùÓĞµÄRFÖĞ¶Ï
-	rf_irq_set_mask(FLD_RF_IRQ_RX);//´ò¿ªRF RXÖĞ¶Ï
-	irq_set_mask(FLD_IRQ_ZB_RT_EN);//¿ªRF×ÜÖĞ¶Ï
+	rf_irq_clr_mask(0xffff);                      //å…ˆå…³æ‰æ‰€æœ‰çš„RFä¸­æ–­
+	rf_irq_set_mask(FLD_RF_IRQ_RX);//æ‰“å¼€RF RXä¸­æ–­
+	irq_set_mask(FLD_IRQ_ZB_RT_EN);//å¼€RFæ€»ä¸­æ–­
 	g_state=PAIRING_STATE;
 	sys_run_tick=get_sys_tick();
 }
 
 /***********************************************************
- * º¯Êı¹¦ÄÜ£ºÌøÆµ£¬4¸öÆµµãÑ­»·ÇĞ»»
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šè·³é¢‘ï¼Œ4ä¸ªé¢‘ç‚¹å¾ªç¯åˆ‡æ¢
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void rf_change_channel_func(void)
 {
@@ -45,83 +68,83 @@ void rf_change_channel_func(void)
 }
 unsigned int debug,debug1;
 /***********************************************************
- * º¯Êı¹¦ÄÜ£ºÊÕµ½RFÊı¾İºó´¦Àíº¯Êı
- * ²Î       Êı£º
- * ·µ »Ø  Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šæ”¶åˆ°RFæ•°æ®åå¤„ç†å‡½æ•°
+ * å‚       æ•°ï¼š
+ * è¿” å›  å€¼ï¼š
  **********************************************************/
 void rf_packget_pro_func(void)
 {
-	if(g_state==PAIRING_STATE){//´¦ÓÚ¶ÔÂë×´Ì¬
-		if(g_package_new){//ÊÕµ½ĞÂµÄÊı¾İ°ü
+	if(g_state==PAIRING_STATE){//å¤„äºå¯¹ç çŠ¶æ€
+		if(g_package_new){//æ”¶åˆ°æ–°çš„æ•°æ®åŒ…
 			g_package_new=0;
-			if(g_package_cmd==KEY_PAIRE_CODE_CMD){//¶ÔÂëÃüÁî
+			if(g_package_cmd==KEY_PAIRE_CODE_CMD){//å¯¹ç å‘½ä»¤
 				if(led_control.led_state!=LED_YL_ON_STATE){
 					led_control.led_state=LED_OFF_STATE;
 				}
 				led_rgb_off_func();
-				save_remote_ID_func(g_package_pid);//±£´æID
-				led_flash_updata_func(3);          //ÉÁË¸3´Î
-				g_state=NORMAL_STATE;              //½øÈë±ê×¼Ä£Ê½
-			}else if(g_package_cmd==KEY_CLEAR_CODE_CMD){//ÇåÂëÃüÁî
+				save_remote_ID_func(g_package_pid);//ä¿å­˜ID
+				led_flash_updata_func(3);          //é—ªçƒ3æ¬¡
+				g_state=NORMAL_STATE;              //è¿›å…¥æ ‡å‡†æ¨¡å¼
+			}else if(g_package_cmd==KEY_CLEAR_CODE_CMD){//æ¸…ç å‘½ä»¤
 				if(led_control.led_state!=LED_YL_ON_STATE){
 					led_control.led_state=LED_OFF_STATE;
 				}
 				led_rgb_off_func();
-				clear_remote_ID_func();                 //Çå³ıËùÓĞ±£´æµÄIDÖµ
-				led_flash_updata_func(5);               //ÉÁË¸5´Î
-				g_state=NORMAL_STATE;                   //½øÈë±ê×¼Ä£Ê½
-			}else if(g_package_cmd!=KEY_NONE_CMD){      //²»ÊÇ¿Õ¼ü
-				if(paired_ID_match(g_package_pid))      //ÈôIDÆ¥Åä
-					g_state=NORMAL_STATE;               //ÍË³ö¶ÔÂëÄ£Ê½
+				clear_remote_ID_func();                 //æ¸…é™¤æ‰€æœ‰ä¿å­˜çš„IDå€¼
+				led_flash_updata_func(5);               //é—ªçƒ5æ¬¡
+				g_state=NORMAL_STATE;                   //è¿›å…¥æ ‡å‡†æ¨¡å¼
+			}else if(g_package_cmd!=KEY_NONE_CMD){      //ä¸æ˜¯ç©ºé”®
+				if(paired_ID_match(g_package_pid))      //è‹¥IDåŒ¹é…
+					g_state=NORMAL_STATE;               //é€€å‡ºå¯¹ç æ¨¡å¼
 			}
 		}
 
-		if(timeout_us(sys_run_tick,6000000)){      //¿ªµÆ6sÒÔºóÍË³ö¶ÔÂëÄ£Ê½
+		if(timeout_us(sys_run_tick,6000000)){      //å¼€ç¯6sä»¥åé€€å‡ºå¯¹ç æ¨¡å¼
 			g_state=NORMAL_STATE;
 		}
-	}else if(g_state==NORMAL_STATE){                    //Õı³£¿ØÖÆÄ£Ê½
-		if(g_package_new){                              //ÊÕµ½ĞÂ°ü
+	}else if(g_state==NORMAL_STATE){                    //æ­£å¸¸æ§åˆ¶æ¨¡å¼
+		if(g_package_new){                              //æ”¶åˆ°æ–°åŒ…
 			g_package_new=0;
-			if(paired_ID_match(g_package_pid)){         //IDÊÇ·ñÆ¥Åä
-				if(g_package_cmd!=pre_package_cmd||g_package_seq!=pre_package_seq){//IDÓë°üĞòÁĞºÅÊÇ·ñÏàÍ¬£¬Á½¸ö¶¼ÏàÍ¬ÔòÈÏÎªÊÇÍ¬Ò»¸ö°ü£¬¶ªÆú
-					if(led_control.led_state==LED_RGB_ON_STATE||led_control.led_state==LED_RGB_BREATH_STATE){//µ±Ç°µÆ´¦ÓÚRGBÄ£Ê½
-						if(g_package_cmd==KEY_ON_CMD){//É«ÎÂµÆ¿ªµÆÃüÁîÍË³öRGBÄ£Ê½
-							led_rgb_off_func();       //¹Ø±ÕRGB
-							led_on_func();            //´ò¿ªÉ«ÎÂµÆ
+			if(paired_ID_match(g_package_pid)){         //IDæ˜¯å¦åŒ¹é…
+				if(g_package_cmd!=pre_package_cmd||g_package_seq!=pre_package_seq){//IDä¸åŒ…åºåˆ—å·æ˜¯å¦ç›¸åŒï¼Œä¸¤ä¸ªéƒ½ç›¸åŒåˆ™è®¤ä¸ºæ˜¯åŒä¸€ä¸ªåŒ…ï¼Œä¸¢å¼ƒ
+					if(led_control.led_state==LED_RGB_ON_STATE||led_control.led_state==LED_RGB_BREATH_STATE){//å½“å‰ç¯å¤„äºRGBæ¨¡å¼
+						if(g_package_cmd==KEY_ON_CMD){//è‰²æ¸©ç¯å¼€ç¯å‘½ä»¤é€€å‡ºRGBæ¨¡å¼
+							led_rgb_off_func();       //å…³é—­RGB
+							led_on_func();            //æ‰“å¼€è‰²æ¸©ç¯
 							led_control.led_state = LED_YL_ON_STATE;
 						}else if(g_package_cmd==KEY_OFF_CMD){
-							led_rgb_off_func();       //¹Ø±ÕRGB
-							led_off_func();            //¹Ø±ÕÉ«ÎÂµÆ
+							led_rgb_off_func();       //å…³é—­RGB
+							led_off_func();            //å…³é—­è‰²æ¸©ç¯
 							led_control.led_state = LED_OFF_STATE;
-						}else if(g_package_cmd==KEY_SET_RGB_CMD){//ÃüÁîÎªÉèÖÃRGBÖµ
+						}else if(g_package_cmd==KEY_SET_RGB_CMD){//å‘½ä»¤ä¸ºè®¾ç½®RGBå€¼
 							led_control.led_state=LED_RGB_ON_STATE;
 							led_red_target=g_package_red;
 							led_green_target=g_package_green;
 							led_blue_target=g_package_blue;
-							led_rgb_state_change_flag=1;//×´Ì¬¸üĞÂ±êÖ¾
-						}else if(g_package_cmd==KEY_BREATH_RGB_MODE_CMD){//RGBºôÎüÄ£Ê½
+							led_rgb_state_change_flag=1;//çŠ¶æ€æ›´æ–°æ ‡å¿—
+						}else if(g_package_cmd==KEY_BREATH_RGB_MODE_CMD){//RGBå‘¼å¸æ¨¡å¼
 							led_control.led_state=LED_RGB_BREATH_STATE;
 						}
-					}else{//µ±Ç°×´Ì¬ÎªÉ«ÎÂµÆÄ£Ê½
-						if(g_package_cmd<KEY_PAIRE_CODE_CMD){//°´¼üÃüÁîÎªÉ«ÎÂµÆµÄ°´¼üÃüÁî
-							if(g_package_cmd!=KEY_SET_CHRO_LUMI_CMD){//·ÇÉèÖÃÉ«ÎÂµÆ
-								led_event_proc_func(g_package_cmd);//Ö´ĞĞÃüÁî
+					}else{//å½“å‰çŠ¶æ€ä¸ºè‰²æ¸©ç¯æ¨¡å¼
+						if(g_package_cmd<KEY_PAIRE_CODE_CMD){//æŒ‰é”®å‘½ä»¤ä¸ºè‰²æ¸©ç¯çš„æŒ‰é”®å‘½ä»¤
+							if(g_package_cmd!=KEY_SET_CHRO_LUMI_CMD){//éè®¾ç½®è‰²æ¸©ç¯
+								led_event_proc_func(g_package_cmd);//æ‰§è¡Œå‘½ä»¤
 							}else{
-								led_set_lumi_chrome_func(g_package_lumi,g_package_chroma);//ÉèÖÃÉ«ÎÂÖµ
+								led_set_lumi_chrome_func(g_package_lumi,g_package_chroma);//è®¾ç½®è‰²æ¸©å€¼
 							}
-						}else if(g_package_cmd==KEY_SET_RGB_CMD){//ÉèÖÃRGBµÄÖµ
+						}else if(g_package_cmd==KEY_SET_RGB_CMD){//è®¾ç½®RGBçš„å€¼
 							led_off_func();
 							led_control.led_state=LED_RGB_ON_STATE;
 							led_rgb_set_func(g_package_red,g_package_green,g_package_blue);
-						}else if(g_package_cmd==KEY_BREATH_RGB_MODE_CMD){//RGBºôÎüÄ£Ê½
+						}else if(g_package_cmd==KEY_BREATH_RGB_MODE_CMD){//RGBå‘¼å¸æ¨¡å¼
 							led_off_func();
 							led_control.led_state=LED_RGB_BREATH_STATE;
 						}
 					}
 				}
 			}
-			pre_package_cmd=g_package_cmd;//±£´æÃüÁî
-			pre_package_seq=g_package_seq;//±£´æĞòÁĞºÅ
+			pre_package_cmd=g_package_cmd;//ä¿å­˜å‘½ä»¤
+			pre_package_seq=g_package_seq;//ä¿å­˜åºåˆ—å·
 		}
 	}
 }

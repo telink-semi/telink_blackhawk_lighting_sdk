@@ -1,3 +1,26 @@
+/********************************************************************************************************
+ * @file	app.c
+ *
+ * @brief	This is the source file for TLSR8231
+ *
+ * @author	Telink
+ * @date	May 12, 2019
+ *
+ * @par     Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
+ *
+ *              http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
+ *
+ *******************************************************************************************************/
 #include "app_config.h"
 #include "../../drivers.h"
 #include "frame.h"
@@ -9,20 +32,20 @@
 #define  LED_PIN        GPIO_SWSC7
 #define  LED_OFF        gpio_write(LED_PIN,0)
 #define  LED_ON         gpio_write(LED_PIN,1)
-//const unsigned int gpio_row[]={GPIO_PC4,GPIO_PC5,GPIO_PC1,GPIO_PB2};//¾ØÕóĞĞµÄIO
-//const unsigned int gpio_column[]={GPIO_PB1,GPIO_PB3,GPIO_PB4,GPIO_PB5};//¾ØÕóÁĞµÄIO
-const unsigned int gpio_row[]={GPIO_PC2,GPIO_PC3,GPIO_PC1,GPIO_PB0,GPIO_PD2};//¾ØÕóĞĞµÄIO
-const unsigned int gpio_column[]={GPIO_PB3,GPIO_PB4,GPIO_PB5};//¾ØÕóÁĞµÄIO
-unsigned char pre_key;//¼ÇÂ¼ÉÏ´Î°´¼ü°´ÏÂµÄÖµ
-unsigned char current_active_group;//É«ÎÂÁÁ¶Èµ÷ÊÔÊ±µÄ×é±ğ
-unsigned char key_down_cnt;//°´¼ü°´ÏÂ¼ÆÊıÖµ
-unsigned char key_up_cnt;//°´¼üµ¯Æğ¼ÆÊıÖµ
-unsigned char key_off_cnt;//¹ØµÆ½¡°´ÏÂµÄ¼ÆÊıÖµ£¬¶Ì°´Îª¿ªµÆ£¬³¤°´ÎªÒ¹µÆ
-unsigned char key_lumi_chro_cnt;//É«ÎÂÁÁ¶È°´¼ü°´ÏÂµÄ¼ÆÊıÖµ£¬Ò»Ö±°´ÏÂÔòÉ«ÎÂÖµ²»¶ÏÔö¼Ó
-unsigned char led_night_cmd_flag;//Ò¹µÆÃüÁîÖ´ĞĞ±êÖ¾
+//const unsigned int gpio_row[]={GPIO_PC4,GPIO_PC5,GPIO_PC1,GPIO_PB2};//çŸ©é˜µè¡Œçš„IO
+//const unsigned int gpio_column[]={GPIO_PB1,GPIO_PB3,GPIO_PB4,GPIO_PB5};//çŸ©é˜µåˆ—çš„IO
+const unsigned int gpio_row[]={GPIO_PC2,GPIO_PC3,GPIO_PC1,GPIO_PB0,GPIO_PD2};//çŸ©é˜µè¡Œçš„IO
+const unsigned int gpio_column[]={GPIO_PB3,GPIO_PB4,GPIO_PB5};//çŸ©é˜µåˆ—çš„IO
+unsigned char pre_key;//è®°å½•ä¸Šæ¬¡æŒ‰é”®æŒ‰ä¸‹çš„å€¼
+unsigned char current_active_group;//è‰²æ¸©äº®åº¦è°ƒè¯•æ—¶çš„ç»„åˆ«
+unsigned char key_down_cnt;//æŒ‰é”®æŒ‰ä¸‹è®¡æ•°å€¼
+unsigned char key_up_cnt;//æŒ‰é”®å¼¹èµ·è®¡æ•°å€¼
+unsigned char key_off_cnt;//å…³ç¯å¥æŒ‰ä¸‹çš„è®¡æ•°å€¼ï¼ŒçŸ­æŒ‰ä¸ºå¼€ç¯ï¼Œé•¿æŒ‰ä¸ºå¤œç¯
+unsigned char key_lumi_chro_cnt;//è‰²æ¸©äº®åº¦æŒ‰é”®æŒ‰ä¸‹çš„è®¡æ•°å€¼ï¼Œä¸€ç›´æŒ‰ä¸‹åˆ™è‰²æ¸©å€¼ä¸æ–­å¢åŠ 
+unsigned char led_night_cmd_flag;//å¤œç¯å‘½ä»¤æ‰§è¡Œæ ‡å¿—
 unsigned int loop;
 #if 1
-const unsigned char key_table[5][3] = {//°´¼ü±í¸ñ
+const unsigned char key_table[5][3] = {//æŒ‰é”®è¡¨æ ¼
 		{((KEY_LUMINANT_DECREASE<<4)|GROUP_ALL),((KEY_OFF<<4)|GROUP_2),((KEY_ON<<4)|GROUP_2)},
 		{((KEY_CHROMA_DECREASE<<4)|GROUP_ALL),((KEY_OFF<<4)|GROUP_1),((KEY_ON<<4)|GROUP_1)},
 		{((KEY_ON<<4)|GROUP_3),((KEY_OFF<<4)|GROUP_3),((KEY_OFF<<4)|GROUP_4)},
@@ -30,7 +53,7 @@ const unsigned char key_table[5][3] = {//°´¼ü±í¸ñ
 		{((KEY_OFF<<4)|GROUP_ALL),((KEY_LUMINANT_INCREASE<<4)|GROUP_ALL),((KEY_ON<<4)|GROUP_ALL)}
 };
 #else
-const unsigned char key_table[4][4] = {//°´¼ü±í¸ñ
+const unsigned char key_table[4][4] = {//æŒ‰é”®è¡¨æ ¼
 		{((KEY_ON<<4)|GROUP_1),                   ((KEY_LUMINANT_DECREASE<<4)|GROUP_ALL), ((KEY_ON<<4)|GROUP_2),                ((KEY_ON<<4)|GROUP_3)  },
 		{((KEY_OFF<<4)|GROUP_1),                  0x15,                                   ((KEY_OFF<<4)|GROUP_2),               ((KEY_OFF<<4)|GROUP_3) },
 		{((KEY_CHROMA_DECREASE<<4)|GROUP_ALL),    0x19,                                   ((KEY_CHROMA_INCREASE<<4)|GROUP_ALL), ((KEY_OFF<<4)|GROUP_4) },
@@ -38,82 +61,82 @@ const unsigned char key_table[4][4] = {//°´¼ü±í¸ñ
 };
 #endif
 /*******************************************************************
- * º¯Êı¹¦ÄÜ£ºGPIO³õÊ¼»¯
- * ²Î       Êı£º
- * ·µ »Ø Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šGPIOåˆå§‹åŒ–
+ * å‚       æ•°ï¼š
+ * è¿” å› å€¼ï¼š
  ******************************************************************/
 void gpio_init_func(void)
 {
 	unsigned char i;
-	gpio_set_func(LED_PIN,AS_GPIO);     //IOÉèÎªÆÕÍ¨IO
-	gpio_set_output_en(LED_PIN,LEVEL_HIGH); //Êä³öÊ¹ÄÜ¹Øµô
-	gpio_set_input_en(LED_PIN,LEVEL_LOW);  //ÊäÈëÊ¹ÄÜ¹Øµô
+	gpio_set_func(LED_PIN,AS_GPIO);     //IOè®¾ä¸ºæ™®é€šIO
+	gpio_set_output_en(LED_PIN,LEVEL_HIGH); //è¾“å‡ºä½¿èƒ½å…³æ‰
+	gpio_set_input_en(LED_PIN,LEVEL_LOW);  //è¾“å…¥ä½¿èƒ½å…³æ‰
 	for(i=0;i<5;i++){
-		gpio_set_func(gpio_row[i],AS_GPIO);     //IOÉèÎªÆÕÍ¨IO
-		gpio_set_output_en(gpio_row[i],LEVEL_LOW); //Êä³öÊ¹ÄÜ¹Øµô
-		gpio_set_input_en(gpio_row[i],LEVEL_LOW);  //ÊäÈëÊ¹ÄÜ¹Øµô
-		gpio_write(gpio_row[i],LEVEL_LOW);        //IOÊä³öÉèÎªµÍµçÆ½
-		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);        //IOÉèÎªĞü¸¡×´Ì¬
+		gpio_set_func(gpio_row[i],AS_GPIO);     //IOè®¾ä¸ºæ™®é€šIO
+		gpio_set_output_en(gpio_row[i],LEVEL_LOW); //è¾“å‡ºä½¿èƒ½å…³æ‰
+		gpio_set_input_en(gpio_row[i],LEVEL_LOW);  //è¾“å…¥ä½¿èƒ½å…³æ‰
+		gpio_write(gpio_row[i],LEVEL_LOW);        //IOè¾“å‡ºè®¾ä¸ºä½ç”µå¹³
+		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);        //IOè®¾ä¸ºæ‚¬æµ®çŠ¶æ€
 	}
 
 	for(i=0;i<3;i++){
-		gpio_set_func(gpio_column[i],AS_GPIO);        //IOÉèÎªÆÕÍ¨IO
-		gpio_set_output_en(gpio_column[i],LEVEL_LOW);    //Êä³öÊ¹ÄÜ¹Øµô
-		gpio_set_input_en(gpio_column[i],LEVEL_HIGH);       //Ê¹ÄÜÊäÈë
-		gpio_set_up_down_resistor(gpio_column[i],GPIO_PULL_UP_1M);          //ÉèÖÃÉÏÀ­1Mµç×è
-		gpio_write(gpio_column[i],LEVEL_LOW);           //Êä³öÉèÎª0
-		pm_set_gpio_wakeup(gpio_column[i],0,1);       //ÉèÖÃIOµÍµçÆ½»½ĞÑ£¬µÚÒ»²ÎÊıÎªIO£¬µÚ¶ø²ÎÊıÎª»½ĞÑµçÆ½£¬µÚÈı²ÎÊıÎªÊ¹ÄÜ
+		gpio_set_func(gpio_column[i],AS_GPIO);        //IOè®¾ä¸ºæ™®é€šIO
+		gpio_set_output_en(gpio_column[i],LEVEL_LOW);    //è¾“å‡ºä½¿èƒ½å…³æ‰
+		gpio_set_input_en(gpio_column[i],LEVEL_HIGH);       //ä½¿èƒ½è¾“å…¥
+		gpio_set_up_down_resistor(gpio_column[i],GPIO_PULL_UP_1M);          //è®¾ç½®ä¸Šæ‹‰1Mç”µé˜»
+		gpio_write(gpio_column[i],LEVEL_LOW);           //è¾“å‡ºè®¾ä¸º0
+		pm_set_gpio_wakeup(gpio_column[i],0,1);       //è®¾ç½®IOä½ç”µå¹³å”¤é†’ï¼Œç¬¬ä¸€å‚æ•°ä¸ºIOï¼Œç¬¬è€Œå‚æ•°ä¸ºå”¤é†’ç”µå¹³ï¼Œç¬¬ä¸‰å‚æ•°ä¸ºä½¿èƒ½
 	}
 }
 /*******************************************************************
- * º¯Êı¹¦ÄÜ£º½øÈëdeepsleepÇ°ÉèÖÃ²ÎÊı
- * ²Î       Êı£º
- * ·µ »Ø Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šè¿›å…¥deepsleepå‰è®¾ç½®å‚æ•°
+ * å‚       æ•°ï¼š
+ * è¿” å› å€¼ï¼š
  ******************************************************************/
 void set_wakeup_func(void)
 {
 	unsigned char i;
 	for(i=0;i<5;i++)
-		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_DN_100K);      //ÉèÖÃĞĞIOÏÂÀ­100K£¬µ±°´¼ü°´ÏÂÊ±£¬ÁĞIOÎªµÍµçÆ½£¬Ôò¿É»½ĞÑMCU
-	analog_write(0x3a, current_active_group);         //½øÈëdeepsleepÇ°±£´æ×é±ğÖµ
-	analog_write(0x3b, led_remote.rf_seq_no);         //½øÈëdeepsleepÇ°±£´æ°üµÄĞòÁĞºÅ
+		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_DN_100K);      //è®¾ç½®è¡ŒIOä¸‹æ‹‰100Kï¼Œå½“æŒ‰é”®æŒ‰ä¸‹æ—¶ï¼Œåˆ—IOä¸ºä½ç”µå¹³ï¼Œåˆ™å¯å”¤é†’MCU
+	analog_write(0x3a, current_active_group);         //è¿›å…¥deepsleepå‰ä¿å­˜ç»„åˆ«å€¼
+	analog_write(0x3b, led_remote.rf_seq_no);         //è¿›å…¥deepsleepå‰ä¿å­˜åŒ…çš„åºåˆ—å·
 }
 /*******************************************************************
- * º¯Êı¹¦ÄÜ£º·¢ËÍÊı¾İ°üµÄÊı¾İ³õÊ¼»¯
- * ²Î       Êı£º
- * ·µ »Ø Öµ£º
+ * å‡½æ•°åŠŸèƒ½ï¼šå‘é€æ•°æ®åŒ…çš„æ•°æ®åˆå§‹åŒ–
+ * å‚       æ•°ï¼š
+ * è¿” å› å€¼ï¼š
  ******************************************************************/
 void package_data_init_func(void)
 {
-	led_remote.dma_len = sizeof(rf_packet_led_remote_t)-sizeof(led_remote.dma_len);//ÉèÖÃ°üµÄdma³¤¶È
+	led_remote.dma_len = sizeof(rf_packet_led_remote_t)-sizeof(led_remote.dma_len);//è®¾ç½®åŒ…çš„dmaé•¿åº¦
 	led_remote.rf_len = led_remote.dma_len-1;
 	led_remote.rf_len1 = led_remote.dma_len-2;
-	led_remote.vid = 0x5453;//ÉèÖÃVIDÖµ£¬Ä¿Ç°µÆÉèÖÃÎª0x5453£¬¿Í»§¿É×Ô¶¨Òå
-//	led_remote.pid = 0x12345678;//ÉèÖÃÒ£¿ØÆ÷ID£¬Ò»°ã²ÉÓÃ¹öÂë·½Ê½
+	led_remote.vid = 0x5453;//è®¾ç½®VIDå€¼ï¼Œç›®å‰ç¯è®¾ç½®ä¸º0x5453ï¼Œå®¢æˆ·å¯è‡ªå®šä¹‰
+//	led_remote.pid = 0x12345678;//è®¾ç½®é¥æ§å™¨IDï¼Œä¸€èˆ¬é‡‡ç”¨æ»šç æ–¹å¼
 	led_remote.pid = otp_read(PID_ADDR) | otp_read(PID_ADDR+1)<<8 | otp_read(PID_ADDR+2)<<16 | otp_read(PID_ADDR+3)<<24;
-	current_active_group = analog_read(0x3a);//¶ÁÉÏ´Î±£´æµÄ×é±ğÖµ£¬ÈôÎªµÚÒ»´ÎÉÏµç£¬ÔòÎª0
-	led_remote.rf_seq_no = analog_read(0x3b);//¶ÁÉÏ´Î°üµÄĞòÁĞÖµ£¬ÈôÎªµÚÒ»´ÎÉÏµç£¬ÔòÎª0
+	current_active_group = analog_read(0x3a);//è¯»ä¸Šæ¬¡ä¿å­˜çš„ç»„åˆ«å€¼ï¼Œè‹¥ä¸ºç¬¬ä¸€æ¬¡ä¸Šç”µï¼Œåˆ™ä¸º0
+	led_remote.rf_seq_no = analog_read(0x3b);//è¯»ä¸Šæ¬¡åŒ…çš„åºåˆ—å€¼ï¼Œè‹¥ä¸ºç¬¬ä¸€æ¬¡ä¸Šç”µï¼Œåˆ™ä¸º0
 }
 /*******************************************************************
- * º¯Êı¹¦ÄÜ£º°´¼üÉ¨Ãè
- * ²Î       Êı£º
- * ·µ »Ø Öµ£º·µ»Ø¶ÔÓ¦µÄ°´¼üÖµ
+ * å‡½æ•°åŠŸèƒ½ï¼šæŒ‰é”®æ‰«æ
+ * å‚       æ•°ï¼š
+ * è¿” å› å€¼ï¼šè¿”å›å¯¹åº”çš„æŒ‰é”®å€¼
  ******************************************************************/
 unsigned char remote_key_scan_func(void)
 {
 	unsigned char i,j;
 	for(i=0;i<5;i++){
-		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_DN_100K);//ÉèÖÃĞĞIOÎªÏÂÀ­100K
+		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_DN_100K);//è®¾ç½®è¡ŒIOä¸ºä¸‹æ‹‰100K
 //		gpio_write(gpio_row[i],LEVEL_LOW);
 		delay_us(20);
 		for(j=0;j<3;j++){
-			if(gpio_read(gpio_column[j])==0){//ÓĞ°´¼ü°´ÏÂ
-				gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);//Ğü¸¡
+			if(gpio_read(gpio_column[j])==0){//æœ‰æŒ‰é”®æŒ‰ä¸‹
+				gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);//æ‚¬æµ®
 //				gpio_write(gpio_row[i],LEVEL_HIGH);
-				return key_table[i][j];//²é±í£¬·µ»Ø±íÖµ
+				return key_table[i][j];//æŸ¥è¡¨ï¼Œè¿”å›è¡¨å€¼
 			}
 		}
-		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);//ÈôÎŞÏàÓ¦°´¼ü°´ÏÂ£¬ÔòĞü¸¡
+		gpio_set_up_down_resistor(gpio_row[i],GPIO_PULL_NONE);//è‹¥æ— ç›¸åº”æŒ‰é”®æŒ‰ä¸‹ï¼Œåˆ™æ‚¬æµ®
 //		gpio_write(gpio_row[i],LEVEL_HIGH);
 		delay_us(20);
 	}
@@ -121,82 +144,82 @@ unsigned char remote_key_scan_func(void)
 }
 void user_init(void)
 {
-	otp_init_read();//ZQĞÂÔö£¬ÎªÁË³õÊ¼»¯OTPµÄclock
+	otp_init_read();//ZQæ–°å¢ï¼Œä¸ºäº†åˆå§‹åŒ–OTPçš„clock
 	gpio_init_func();
 	rf_init_func();
 	package_data_init_func();
-	irq_enable();//¿ªÏµÍ³×ÜÖĞ¶Ï
+	irq_enable();//å¼€ç³»ç»Ÿæ€»ä¸­æ–­
 }
 unsigned int keyvalue;
 void main_loop(void)
 {
 	unsigned short Cur_key=0;
 	loop++;
-	Cur_key=remote_key_scan_func();//¶Á°´¼üÖµ
+	Cur_key=remote_key_scan_func();//è¯»æŒ‰é”®å€¼
 	keyvalue=Cur_key;
-	if((Cur_key>>4)== KEY_ON){//ÊÇ·ñÎª¿ªµÆ½¡£¬¿ªµÆ¼üÔò±£´æ×é±ğ£¬¸øÉ«ÎÂÁÁ¶È°´¼üÊ¹ÓÃ
+	if((Cur_key>>4)== KEY_ON){//æ˜¯å¦ä¸ºå¼€ç¯å¥ï¼Œå¼€ç¯é”®åˆ™ä¿å­˜ç»„åˆ«ï¼Œç»™è‰²æ¸©äº®åº¦æŒ‰é”®ä½¿ç”¨
 	    current_active_group = Cur_key&0xf;
-	}else if(((Cur_key>>4)!= KEY_OFF) && Cur_key){//ÎªÉ«ÎÂÁÁ¶È°´¼üÊ±£¬Ê¹ÓÃ±£´æµÄ×é±ğ
+	}else if(((Cur_key>>4)!= KEY_OFF) && Cur_key){//ä¸ºè‰²æ¸©äº®åº¦æŒ‰é”®æ—¶ï¼Œä½¿ç”¨ä¿å­˜çš„ç»„åˆ«
 	    Cur_key = (Cur_key&0xf0)|current_active_group;
 	}
 
-	if(Cur_key){//ÓĞ°´¼ü°´ÏÂ
+	if(Cur_key){//æœ‰æŒ‰é”®æŒ‰ä¸‹
 		if(loop&0x08)
 			LED_ON;
 		else
 			LED_OFF;
-		if(Cur_key!=pre_key){//°´¼üÖµÊÇ·ñ±ä»¯
+		if(Cur_key!=pre_key){//æŒ‰é”®å€¼æ˜¯å¦å˜åŒ–
 			key_down_cnt++;
-			if(key_down_cnt>4){//4´ÎÏû¶¶
+			if(key_down_cnt>4){//4æ¬¡æ¶ˆæŠ–
 				key_up_cnt=0;
 				key_lumi_chro_cnt=0;
 				key_off_cnt=0;
 				pre_key=Cur_key;
-				led_remote.rf_seq_no++;//°üµÄĞòÁĞºÅ¸üĞÂ£¬ÔòÈÏÎªÊ±ĞÂÃüÁî
+				led_remote.rf_seq_no++;//åŒ…çš„åºåˆ—å·æ›´æ–°ï¼Œåˆ™è®¤ä¸ºæ—¶æ–°å‘½ä»¤
 			}
 		}
 		if((pre_key>>4)!=KEY_OFF){
 			led_remote.control_key=pre_key;
 			if((pre_key>>4)==KEY_LUMINANT_INCREASE||(pre_key>>4)==KEY_LUMINANT_DECREASE||(pre_key>>4)==KEY_CHROMA_INCREASE||(pre_key>>4)==KEY_CHROMA_DECREASE){
 				key_lumi_chro_cnt++;
-				if(key_lumi_chro_cnt&0x20){//É«ÎÂÁÁ¶È°´¼ü°´ÏÂÊ±£¬Ã¿320msµ÷½Ú1¼¶
+				if(key_lumi_chro_cnt&0x20){//è‰²æ¸©äº®åº¦æŒ‰é”®æŒ‰ä¸‹æ—¶ï¼Œæ¯320msè°ƒèŠ‚1çº§
 					key_lumi_chro_cnt=0;
-					led_remote.rf_seq_no++;//°üµÄĞòÁĞºÅ¸üĞÂ£¬ÔòÈÏÎªÊ±ĞÂÃüÁî
+					led_remote.rf_seq_no++;//åŒ…çš„åºåˆ—å·æ›´æ–°ï¼Œåˆ™è®¤ä¸ºæ—¶æ–°å‘½ä»¤
 				}
 			}
 		}else{
 			key_lumi_chro_cnt=0;
 			key_off_cnt++;
-			if(key_off_cnt&0x80){//¹ØµÆ½¡°´ÏÂ1.28s£¬½øÈëÒ¹µÆÄ£Ê½
-				led_night_cmd_flag=1;//Ò¹µÆÃüÁî´¥·¢±êÖ¾
+			if(key_off_cnt&0x80){//å…³ç¯å¥æŒ‰ä¸‹1.28sï¼Œè¿›å…¥å¤œç¯æ¨¡å¼
+				led_night_cmd_flag=1;//å¤œç¯å‘½ä»¤è§¦å‘æ ‡å¿—
 				key_off_cnt=0x80;
-				led_remote.control_key = (KEY_QUICK_LOW_LIGHT<<4) | (pre_key&0x0f);//Ò¹µÆÃüÁî
+				led_remote.control_key = (KEY_QUICK_LOW_LIGHT<<4) | (pre_key&0x0f);//å¤œç¯å‘½ä»¤
 			}
 		}
-	}else{//°´¼üµ¯Æğ
+	}else{//æŒ‰é”®å¼¹èµ·
 		LED_OFF;
 		key_up_cnt++;
 		key_down_cnt=0;
 		key_lumi_chro_cnt=0;
 		key_off_cnt=0;
 		if(key_up_cnt>4){
-			if(((pre_key>>4)==KEY_OFF)&&(led_night_cmd_flag==0)){//Îª¹ØµÆ°´¼ü£¬²¢Î´´¥·¢Ò¹µÆÃüÁî
+			if(((pre_key>>4)==KEY_OFF)&&(led_night_cmd_flag==0)){//ä¸ºå…³ç¯æŒ‰é”®ï¼Œå¹¶æœªè§¦å‘å¤œç¯å‘½ä»¤
 				if(key_up_cnt<15){
-					led_remote.control_key = pre_key;//Á¬Ğø·¢ËÍ15´Î¹ØµÆÃüÁîÖµ
+					led_remote.control_key = pre_key;//è¿ç»­å‘é€15æ¬¡å…³ç¯å‘½ä»¤å€¼
 				}else if(key_up_cnt<25){
-					led_remote.control_key = KEY_NONE;//·¢ËÍ10´Î°´¼üµ¯ÆğÖµ
-					pre_key = KEY_NONE;               //°´¼üµ¯Æğºó£¬Çå³ı±£´æµÄ°´¼üÖµ
+					led_remote.control_key = KEY_NONE;//å‘é€10æ¬¡æŒ‰é”®å¼¹èµ·å€¼
+					pre_key = KEY_NONE;               //æŒ‰é”®å¼¹èµ·åï¼Œæ¸…é™¤ä¿å­˜çš„æŒ‰é”®å€¼
 				}else{
 #if DEBUG
 					delay_us(100000);
 #else
 					set_wakeup_func();
-					pm_sleep_wakeup(DEEPSLEEP_MODE,PM_WAKEUP_PAD,0);//½øÈëdeepsleepÄ£Ê½£¬ÉèÖÃPAD»½ĞÑ
+					pm_sleep_wakeup(DEEPSLEEP_MODE,PM_WAKEUP_PAD,0);//è¿›å…¥deepsleepæ¨¡å¼ï¼Œè®¾ç½®PADå”¤é†’
 #endif
 				}
 			}else{
 				led_night_cmd_flag=0;
-				if(key_up_cnt<15){//·¢ËÍ15´Î°´¼üµ¯ÆğÖµ
+				if(key_up_cnt<15){//å‘é€15æ¬¡æŒ‰é”®å¼¹èµ·å€¼
 					led_remote.control_key = KEY_NONE;
 					pre_key = KEY_NONE;
 				}else{
@@ -210,10 +233,10 @@ void main_loop(void)
 			}
 		}
 	}
-	send_package_data_func();//·¢ËÍÊı¾İ
+	send_package_data_func();//å‘é€æ•°æ®
 #if DEBUG
 	delay_us(10000);
 #else
-	pm_sleep_wakeup(SUSPEND_MODE,PM_WAKEUP_TIMER,get_sys_tick()+10*CLOCK_SYS_CLOCK_1MS);//½øÈësuspend 10ms
+	pm_sleep_wakeup(SUSPEND_MODE,PM_WAKEUP_TIMER,get_sys_tick()+10*CLOCK_SYS_CLOCK_1MS);//è¿›å…¥suspend 10ms
 #endif
 }

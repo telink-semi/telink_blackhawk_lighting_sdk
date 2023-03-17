@@ -1,26 +1,28 @@
 /********************************************************************************************************
- * @file     rf_drv.h
+ * @file	rf_drv.h
  *
- * @brief    This is the head file for TLSR8231
+ * @brief	This is the head file for TLSR8231
  *
- * @author	 Telink
- * @date    May 24, 2019
+ * @author	Telink
+ * @date	May 12, 2019
  *
- * @par      Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
+ * @par		Copyright (c) 2018, Telink Semiconductor (Shanghai) Co., Ltd.
+ *			All rights reserved.
  *
- *           The information contained herein is confidential property of Telink
- *           Semiconductor (Shanghai) Co., Ltd. and is available under the terms
- *           of Commercial License Agreement between Telink Semiconductor (Shanghai)
- *           Co., Ltd. and the licensee or the terms described here-in. This heading
- *           MUST NOT be removed from this file.
+ *          The information contained herein is confidential property of Telink
+ *          Semiconductor (Shanghai) Co., Ltd. and is available under the terms
+ *          of Commercial License Agreement between Telink Semiconductor (Shanghai)
+ *          Co., Ltd. and the licensee or the terms described here-in. This heading
+ *          MUST NOT be removed from this file.
  *
- *           Licensees are granted free, non-transferable use of the information in this
- *           file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
- * @par      History:
- * 			 1.initial release(May. 24 2019)
+ *          Licensee shall not delete, modify or alter (or permit any third party to delete, modify, or
+ *          alter) any information contained herein in whole or in part except as expressly authorized
+ *          by Telink semiconductor (shanghai) Co., Ltd. Otherwise, licensee shall be solely responsible
+ *          for any claim to the extent arising out of or relating to such deletion(s), modification(s)
+ *          or alteration(s).
  *
- * @version  A001
+ *          Licensees are granted free, non-transferable use of the information in this
+ *          file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
  *
  *******************************************************************************************************/
 #ifndef _RF_DRV_H
@@ -208,17 +210,17 @@ void rf_set_power_level_index (RF_TxPowerTypeDef level);
 /**
 *	@brief	  	This function is to set rx buffer
 *
-*	@param[out]	RF_RxAddr  	Pointer for Rx buffer in RAM(Generally it°Øs starting
+*	@param[out]	RF_RxAddr  	Pointer for Rx buffer in RAM(Generally it‚Äôs starting
 *							address of an array.Should be 4-byte aligned)
-*	@param[in]	size   		Rx buffer size (It°Øs an integral multiple of 16)
-*	@param[in]	PingpongEn 	Enable/Disable Ping-Pong buffer 1£∫Enable 0£∫Disable
+*	@param[in]	size   		Rx buffer size (It‚Äôs an integral multiple of 16)
+*	@param[in]	PingpongEn 	Enable/Disable Ping-Pong buffer 1ÔºöEnable 0ÔºöDisable
 *							Note:
-*							When °∞PingpongEn°± is set as 0, received RF data will
-*							be stored in RAM pointed by °∞ RF_RxAddr°±.
-*							When °∞PingpongEn°± is set as 1, received RF data will
+*							When ‚ÄúPingpongEn‚Äù is set as 0, received RF data will
+*							be stored in RAM pointed by ‚Äú RF_RxAddr‚Äù.
+*							When ‚ÄúPingpongEn‚Äù is set as 1, received RF data will
 *							be stored in buffer0 and buffer1 successively.
 *							The RAM size reserved for received RF data should be
-*							double of °∞Size°±.
+*							double of ‚ÄúSize‚Äù.
 *
 *	@return	 	none
 */
@@ -344,8 +346,8 @@ void rf_start_srx  (unsigned int tick);
 *				In this mode, a packet is sent first,RF module waits for 10us,
 *				stays in Rx status until data is received or timeout expires,
 *				then exits this mode.Timeout duration is set by the parameter
-*				°∞timeout_us°±.The address to store received data is set by the
-*				function °∞RF_RxBufferSet°±.
+*				‚Äútimeout_us‚Äù.The address to store received data is set by the
+*				function ‚ÄúRF_RxBufferSet‚Äù.
 *
 *	@param[in]	addr  Tx packet address in RAM. Should be 4-byte aligned.
 *	@param[in]	tick   	Tick value of system timer. It determines when
@@ -365,7 +367,7 @@ void rf_start_stx2rx  (void* addr, unsigned int tick, unsigned int timeout_us);
 *				If it fails to receive packet when timeout expires, RF module
 *				will directly exit this mode.Timeout duration is set by the
 *				parameter "timeout_us".	The address to store received data is set
-*				by the function °∞RF_RxBufferSet°±.
+*				by the function ‚ÄúRF_RxBufferSet‚Äù.
 *
 *	@param[in]	addr 	Tx packet address in RAM. Should be 4-byte aligned.
 *	@param[in]	tick   Tick value of system timer. It determines when to
@@ -441,7 +443,7 @@ static inline void 	tx_settle_adjust(unsigned short txstl_us)
 *	@brief	  	This function serves to clear the Tx finish flag bit.
 *				After all packet data are sent, corresponding Tx finish flag bit
 *				will be set as 1.By reading this flag bit, it can check whether
-*				packet transmission is finished. After the check, it°Øs needed to
+*				packet transmission is finished. After the check, it‚Äôs needed to
 *				manually clear this flag bit so as to avoid misjudgment.
 *   @param      none
 *	@return	 	none
@@ -605,7 +607,7 @@ static inline unsigned char rf_is_rx_finish(void)
 *	@brief	  	This function serves to clear the Tx finish flag bit.
 *				After all packet data are sent, corresponding Tx finish flag bit
 *				will be set as 1.By reading this flag bit, it can check whether
-*				packet transmission is finished. After the check, it°Øs needed to
+*				packet transmission is finished. After the check, it‚Äôs needed to
 *				manually clear this flag bit so as to avoid misjudgment.
 *   @param      none
 *	@return	 	none

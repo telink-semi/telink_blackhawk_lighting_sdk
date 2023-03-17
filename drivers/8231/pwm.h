@@ -1,28 +1,26 @@
 /********************************************************************************************************
- * @file     pwm.h
+ * @file	pwm.h
  *
- * @brief    This is the header file for TLSR8231
+ * @brief	This is the header file for TLSR8231
  *
- * @author	 Telink
- * @date     May 24, 2019
+ * @author	Telink
+ * @date	May 12, 2019
  *
- * @par      Copyright (c) 2019, Telink Semiconductor (Shanghai) Co., Ltd.
- *           All rights reserved.
+ * @par     Copyright (c) 2019, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
  *
- *           The information contained herein is confidential property of Telink
- *           Semiconductor (Shanghai) Co., Ltd. and is available under the terms
- *           of Commercial License Agreement between Telink Semiconductor (Shanghai)
- *           Co., Ltd. and the licensee or the terms described here-in. This heading
- *           MUST NOT be removed from this file.
+ *          Licensed under the Apache License, Version 2.0 (the "License");
+ *          you may not use this file except in compliance with the License.
+ *          You may obtain a copy of the License at
  *
- *           Licensees are granted free, non-transferable use of the information in this
- *           file under Mutual Non-Disclosure Agreement. NO WARRENTY of ANY KIND is provided.
- * @par      History:
- * 			 1.initial release(May. 24 2019)
+ *              http://www.apache.org/licenses/LICENSE-2.0
  *
- * @version  A001
+ *          Unless required by applicable law or agreed to in writing, software
+ *          distributed under the License is distributed on an "AS IS" BASIS,
+ *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *          See the License for the specific language governing permissions and
+ *          limitations under the License.
  *
-*******************************************************************************************************/
+ *******************************************************************************************************/
 #ifndef _PWM_H_
 #define _PWM_H_
 #include "register.h"
@@ -214,9 +212,9 @@ enum{
  * @brief  enum variable used for PD0~PD3  PWM GPIO function setting
  */
 enum{
-		PD0_PWM1_PWM0_N = BIT_RNG(0, 1),//PWM1£º0 PWM0_N:2
-		PD1_PWM0_PWM1_N = BIT_RNG(2, 3),//PWM0£º0 PWM1_N:2
-	    PD2_PWM2_PWM3   = BIT_RNG(4, 5),//PWM3£º0 PWM2:2
+		PD0_PWM1_PWM0_N = BIT_RNG(0, 1),//PWM1ï¼š0 PWM0_N:2
+		PD1_PWM0_PWM1_N = BIT_RNG(2, 3),//PWM0ï¼š0 PWM1_N:2
+	    PD2_PWM2_PWM3   = BIT_RNG(4, 5),//PWM3ï¼š0 PWM2:2
 		PD3_PWM0        = BIT_RNG(6, 7),//0
 	};
 #define    PWM1_CFG_GPIO_PD0()	do{\
