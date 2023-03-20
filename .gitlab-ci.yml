@@ -76,10 +76,8 @@ build_tc32:
     - which tc32-elf-gcc
     - date
     
-    - ls
     - $TC32_ECLIPSE_BUILD  -data ../${CI_PIPELINE_ID}_WS1  -import ./ -cleanBuild 8367_lighting/light
-    - ls
-
+    - rm -rf ../${CI_PIPELINE_ID}_WS1
     - date
 
   # artifacts:
