@@ -134,7 +134,7 @@ extern void uart_reset(void);
 /**
  *	@brief	clear error state of uart rx, maybe used when application detected UART not work
  *	@parm	none
- *	@return	'1' RX error flag rised and cleard success; '0' RX error flag not rised
+ *	@return	'1' RX error flag rose and cleard success; '0' RX error flag not rose
  */
 extern unsigned char uart_ErrorCLR(void);
 /**
