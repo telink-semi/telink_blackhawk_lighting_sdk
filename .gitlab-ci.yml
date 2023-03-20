@@ -76,16 +76,18 @@ build_tc32:
     - which tc32-elf-gcc
     - date
     
-    - $TC32_ECLIPSE_BUILD  -data ${CI_PIPELINE_ID}_WS1  -import ./ -cleanBuild 8367_lighting/light
+    - ls
+    - $TC32_ECLIPSE_BUILD  -data ../${CI_PIPELINE_ID}_WS1  -import ./ -cleanBuild 8367_lighting/light
+    - ls
 
     - date
 
-  artifacts:
-    paths:
-    - "tl_zigbee_sdk/build/tlsr_tc32/sampleLight_8258/*.bin"
-    - "tl_zigbee_sdk/build/tlsr_tc32/sampleLight_8258/*.lst"
-    - "tl_zigbee_sdk/build/tlsr_tc32/sampleLight_8258/*.elf"
-    - mm_pretty.csv
+  # artifacts:
+  #   paths:
+  #   - "tl_zigbee_sdk/build/tlsr_tc32/sampleLight_8258/*.bin"
+  #   - "tl_zigbee_sdk/build/tlsr_tc32/sampleLight_8258/*.lst"
+  #   - "tl_zigbee_sdk/build/tlsr_tc32/sampleLight_8258/*.elf"
+  #   - mm_pretty.csv
 
 # The cov job definition
 cov:
